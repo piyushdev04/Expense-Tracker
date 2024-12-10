@@ -1,0 +1,30 @@
+games,25,Mobile game
+food,45,Italian pizza
+cloths,75,Jacket
+entertainment,200,Movie night
+travel,150,Bus tickets
+utilities,120,Electricity bill
+health,50,Medicine
+food,35,Sushi
+cloths,120,Shoes
+travel,500,Flight tickets
+games,60,Video game
+entertainment,300,Concert tickets
+health,75,Doctor consultation
+utilities,80,Water bill
+food,150,Grocery shopping
+cloths,200,Dress
+entertainment,100,Netflix subscription
+games,15,Puzzle game
+travel,60,Taxi fare
+utilities,40,Internet bill
+health,100,Gym membership
+food,250,Restaurant dinner
+cloths,350,Winter coat
+travel,200,Hotel booking
+entertainment,50,Karaoke
+games,30,Board game
+food,80,Coffee shop
+cloths,40,Cap
+utilities,100,Gas bill
+health,180,Dental checkup
