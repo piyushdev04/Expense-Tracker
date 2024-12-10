@@ -2,28 +2,35 @@
 #include <fstream>
 #include <vector>
 #include <iomanip>
+#include <algorithm>
 
 using namespace std;
 
-// Structure to store expense details
+
 struct Expense {
     string category;
     double amount;
     string description;
 };
 
-// Function prototypes
+
 void addExpense(vector<Expense> &expenses);
 void viewExpenses(const vector<Expense> &expenses);
 double calculateTotal(const vector<Expense> &expenses);
 void saveToFile(const vector<Expense> &expenses, const string &filename);
 void loadFromFile(vector<Expense> &expenses, const string &filename);
+void editExpense(vector<Expense> &expenses);
+void deleteExpense(vector<Expense> &expenses);
+void filterByCategory(const vector<Expense> &expenses);
+void sortExpensesByAmount(vector<Expense> &expenses, bool ascending = true);
+void searchByDescription(const vector<Expense> &expenses);
+void exportToCSV(const vector<Expense> &expenses);
 
 int main() {
     vector<Expense> expenses;
     string filename = "expenses.txt";
 
-    // Load existing data from file
+    
     loadFromFile(expenses, filename);
 
     int choice;
@@ -33,6 +40,12 @@ int main() {
         cout << "2. View Expenses\n";
         cout << "3. Calculate Total Expenses\n";
         cout << "4. Exit\n";
+        cout << "5. Edit Expense\n";
+        cout << "6. Delete Expense\n";
+        cout << "7. Filter Expernses by Category\n";
+        cout << "8. Sort Expenses by Amount\n";
+        cout << "9. Search Expenses by Description\n";
+        cout << "10. Export to CSV\n";
         cout << "Enter your choice: ";
         cin >> choice;
 
@@ -50,6 +63,24 @@ int main() {
                 saveToFile(expenses, filename);
                 cout << "Data saved. Goodbye!\n";
                 break;
+            case 5:
+                editExpense(expenses);
+                break;
+            case 6:
+                deleteExpense(expenses);
+                break;
+            case 7:
+                filterByCategory(expenses);
+                break;
+            case 8:
+                sortExpensesByAmount(expenses);
+                break;
+            case 9:
+                searchByDescription(expenses);
+                break;
+            case 10:
+                exportToCSV(expenses);
+                break;
             default:
                 cout << "Invalid choice. Please try again.\n";
         }
@@ -58,14 +89,14 @@ int main() {
     return 0;
 }
 
-// Function to add a new expense
+
 void addExpense(vector<Expense> &expenses) {
     Expense newExpense;
     cout << "Enter category: ";
     cin >> newExpense.category;
     cout << "Enter amount: $";
     cin >> newExpense.amount;
-    cin.ignore(); // Ignore leftover newline character
+    cin.ignore(); 
     cout << "Enter description: ";
     getline(cin, newExpense.description);
 
@@ -73,7 +104,7 @@ void addExpense(vector<Expense> &expenses) {
     cout << "Expense added successfully.\n";
 }
 
-// Function to view all expenses
+
 void viewExpenses(const vector<Expense> &expenses) {
     if (expenses.empty()) {
         cout << "No expenses to display.\n";
@@ -91,7 +122,7 @@ void viewExpenses(const vector<Expense> &expenses) {
     }
 }
 
-// Function to calculate total expenses
+
 double calculateTotal(const vector<Expense> &expenses) {
     double total = 0;
     for (const auto &expense : expenses) {
@@ -100,7 +131,7 @@ double calculateTotal(const vector<Expense> &expenses) {
     return total;
 }
 
-// Function to save expenses to a file
+
 void saveToFile(const vector<Expense> &expenses, const string &filename) {
     ofstream file(filename);
     if (!file) {
@@ -115,11 +146,10 @@ void saveToFile(const vector<Expense> &expenses, const string &filename) {
     file.close();
 }
 
-// Function to load expenses from a file
+
 void loadFromFile(vector<Expense> &expenses, const string &filename) {
     ifstream file(filename);
     if (!file) {
-        // File doesn't exist, so no data to load
         return;
     }
 
@@ -137,4 +167,120 @@ void loadFromFile(vector<Expense> &expenses, const string &filename) {
     }
 
     file.close();
+}
+
+void editExpense(vector<Expense> &expenses){
+    int index;
+    cout << "Enter the index of the expense to edit: ";
+    cin >> index;
+
+    if (index < 0 || index >= expenses.size()) {
+        cout << "Invalid index.\n";
+        return;
+    }
+
+    cout << "Editing Expense at index" << index << ":\n";
+    cout << "Currency Category: " << expenses[index].category << "\n";
+    cout << "Currency Amount: $" << fixed << setprecision(2) << expenses[index].amount << "\n";
+    cout << "Current Description: " << expenses[index].description << "\n";
+
+    cout << "Enter new category: ";
+    cin >> expenses[index].category;
+    cout << "Enter new amount: $";
+    cin >> expenses[index].amount;
+    cin.ignore();
+    cout << "Enter new description: ";
+    getline(cin, expenses[index].description);
+
+    cout << "Expense updated successfully.\n";
+}
+
+void deleteExpense(vector<Expense> &expenses) {
+    int index;
+    cout << "Enter the index of the expense to delete: ";
+    cin >> index;
+
+    if (index < 0 || index >= expenses.size()) {
+        cout << "Invalid index.\n";
+        return;
+    }
+
+    expenses.erase(expenses.begin() + index);
+    cout << "Expense deleted successfully.\n";
+}
+
+void filterByCategory(const vector<Expense> &expenses) {
+    string category;
+    cout << "Enter category to filter by: ";
+    cin >> category;
+
+    bool found = false;
+    cout << "\nFiltered Expenses:\n";
+    cout << left << setw(15) << "Category" << setw(10) << "Amount" << "Description\n";
+    cout << "-----------------------------------------\n";
+
+    for (const auto &expense : expenses) {
+        if (expense.category == category) {
+            cout << left << setw(15) << expense.category
+            << "$" << setw(9) << fixed << setprecision(2) << expense.amount
+            << expense.description << endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "No expenses found for this category.\n";
+    }
+}
+
+void sortExpensesByAmount(vector<Expense> &expenses, bool ascending) {
+    sort(expenses.begin(), expenses.end(), [ascending](const Expense &a, const Expense &b) {
+        return ascending ? a.amount < b.amount : a.amount > b.amount;
+    });
+    cout << "Expenses sorted successfully.\n";
+}
+
+void searchByDescription(const vector<Expense> &expenses) {
+    string keyword;
+    cout << "Enter description keyword to search: ";
+    cin.ignore();
+    getline(cin, keyword);
+
+    bool found = false;
+    cout << "\nSearch Results:\n";
+    cout << left << setw(15) << "Category" << setw(10) << "Amount" << "Description\n";
+    cout << "----------------------------------------\n";
+
+    for (const auto &expense : expenses) {
+        if (expense.description.find(keyword) != string::npos) {
+            cout << left << setw(15) << expense.category
+                 << "$" << setw(9) << fixed << setprecision(2) << expense.amount
+                 << expense.description << endl;
+            found = true;
+        }
+    }
+
+    if (!found) {
+        cout << "No expenses found matching the description.\n";
+    }
+}
+
+void exportToCSV(const vector<Expense> &expenses) {
+    string filename;
+    cout << "Enter the filename to export to (e.g., expenses.csv): ";
+    cin >> filename;
+
+    ofstream file(filename);
+    if (!file) {
+        cout << "Error creating file.\n";
+        return;
+    }
+
+    file << "Category,Amount,Description\n"; // CSV header
+    for (const auto &expense : expenses) {
+        file << expense.category << "," << expense.amount << "," << expense.description << "\n";
+    }
+
+    file.close();
+    cout << "Data exported successfully.\n";
 }
